@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#04040a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>NextGen Arcade – Check In</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg:#04040a;--sf:#0d0d18;--sf2:#12121f;--sf3:#1a1a2e;
+  --bd:rgba(99,102,241,.18);--bd2:rgba(99,102,241,.38);
+  --tx:#e8e8f0;--mu:#7070a0;
+  --ac:#6366f1;--ac2:#8b5cf6;--ag:rgba(99,102,241,.25);
+  --gn:#10b981;--gnb:rgba(16,185,129,.13);--gnbd:rgba(16,185,129,.35);
+  --am:#f59e0b;--amb:rgba(245,158,11,.13);--ambd:rgba(245,158,11,.35);
+  --rd:#ef4444;--rdb:rgba(239,68,68,.13);--rdbd:rgba(239,68,68,.3);
+  --cy:#06b6d4;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{height:100%;}
+body{
+  background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:16px;
+  min-height:100vh;min-height:-webkit-fill-available;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:16px 16px calc(20px + var(--safe-bottom)) 16px;overflow-x:hidden;
+}
+#bgc{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.pt{position:absolute;animation:flt linear infinite;opacity:0;}
+@keyframes flt{0%{transform:translateY(110vh) scale(0);opacity:0;}8%{opacity:.8;}88%{opacity:.4;}100%{transform:translateY(-10vh) scale(1.1);opacity:0;}}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(99,102,241,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.05) 1px,transparent 1px);
+  background-size:50px 50px;animation:grid-drift 30s linear infinite;}
+@keyframes grid-drift{from{background-position:0 0;}to{background-position:50px 50px;}}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orb-pulse 8s ease-in-out infinite;}
+@keyframes orb-pulse{0%,100%{opacity:.2;}50%{opacity:.45;}}
+.card{
+  background:var(--sf);border:1px solid var(--bd2);border-radius:20px;
+  padding:22px 20px;width:100%;max-width:420px;
+  position:relative;z-index:1;margin-top:16px;margin-bottom:16px;
+  box-shadow:0 0 60px rgba(99,102,241,.18),0 30px 60px rgba(0,0,0,.5);
+  animation:card-in .45s cubic-bezier(.34,1.4,.64,1) both;
+}
+@keyframes card-in{from{opacity:0;transform:translateY(28px) scale(.97);}to{opacity:1;transform:none;}}
+.card::before{
+  content:'';position:absolute;inset:-1px;border-radius:21px;
+  background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(139,92,246,.15),rgba(6,182,212,.15),rgba(99,102,241,.35));
+  z-index:-1;background-size:300% 300%;animation:border-shift 6s ease infinite;
+}
+@keyframes border-shift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.logo-ic{width:40px;height:40px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-size:20px;animation:ic-glow 2.5s ease-in-out infinite;}
+@keyframes ic-glow{0%,100%{box-shadow:0 0 12px var(--ag);}50%{box-shadow:0 0 28px rgba(99,102,241,.65),0 0 60px rgba(99,102,241,.2);}}
+.logo-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;background:linear-gradient(90deg,var(--ac),var(--cy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-role{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
+.st-badge{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;padding:8px 16px;border-radius:22px;margin-bottom:16px;letter-spacing:.05em;box-shadow:0 4px 20px var(--ag);animation:badge-pulse 2.2s ease-in-out infinite;}
+@keyframes badge-pulse{0%,100%{box-shadow:0 4px 20px var(--ag);}50%{box-shadow:0 4px 30px rgba(99,102,241,.55),0 0 0 5px rgba(99,102,241,.06);}}
+h1{font-size:22px;font-weight:700;margin-bottom:5px;}
+.sub-txt{font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.6;}
+.fg{margin-bottom:14px;}
+label{display:block;font-size:11px;color:var(--mu);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;font-weight:500;}
+input,select{width:100%;background:var(--sf2);border:1.5px solid var(--bd2);border-radius:10px;color:var(--tx);font-size:16px;padding:13px 14px;outline:none;transition:all .2s;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none;}
+input::placeholder{color:var(--mu);}
+input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(99,102,241,.14),0 0 16px rgba(99,102,241,.08);background:var(--sf3);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%237070a0' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;}
+select option{background:#0d0d18;color:#e8e8f0;}
+.input-err{border-color:var(--rd) !important;box-shadow:0 0 0 3px rgba(239,68,68,.14) !important;animation:err-shake .35s ease;}
+@keyframes err-shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
+.pay-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.po{background:var(--sf2);border:2px solid var(--bd);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .25s cubic-bezier(.34,1.2,.64,1);user-select:none;-webkit-user-select:none;}
+.po:active{transform:scale(.96);}
+.po.active{border-color:var(--ac);background:rgba(99,102,241,.12);box-shadow:0 0 22px rgba(99,102,241,.22),inset 0 0 20px rgba(99,102,241,.05);}
+.po-icon{font-size:26px;margin-bottom:5px;display:block;}
+.po-label{font-size:13px;font-weight:700;display:block;}
+.po-sub{font-size:10px;color:var(--mu);margin-top:2px;display:block;}
+#ph-wrap{overflow:hidden;transition:max-height .35s ease,opacity .35s ease,margin-bottom .35s ease;}
+#ph-wrap.open{max-height:90px;opacity:1;margin-bottom:14px;}
+#ph-wrap.shut{max-height:0;opacity:0;margin-bottom:0;pointer-events:none;}
+.pbox{background:linear-gradient(135deg,var(--sf2),var(--sf3));border:1px solid var(--gnbd);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;position:relative;overflow:hidden;}
+.pbox::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(16,185,129,.05),transparent);pointer-events:none;}
+.pbox-label{font-size:12px;color:var(--mu);}
+.pbox-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--gn);animation:price-glow 2.5s ease-in-out infinite;transition:all .3s;}
+@keyframes price-glow{0%,100%{text-shadow:0 0 10px rgba(16,185,129,.3);}50%{text-shadow:0 0 24px rgba(16,185,129,.7),0 0 48px rgba(16,185,129,.2);}}
+.stk-box{border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:14px;display:flex;align-items:center;gap:9px;line-height:1.4;animation:stk-in .3s cubic-bezier(.34,1.2,.64,1);}
+@keyframes stk-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.stk-warn{background:var(--amb);border:1px solid var(--ambd);color:var(--am);}
+.stk-ok{background:var(--gnb);border:1px solid var(--gnbd);color:var(--gn);}
+.stk-err{background:var(--rdb);border:1px solid var(--rdbd);color:var(--rd);}
+.spin{animation:spin 1s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.btn{width:100%;padding:16px;border-radius:12px;font-size:15px;font-weight:700;font-family:'Orbitron',sans-serif;letter-spacing:.05em;cursor:pointer;border:none;background:linear-gradient(135deg,var(--ac),var(--ac2),#06b6d4);background-size:200% 200%;color:#fff;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 4px 28px var(--ag);animation:btn-shift 4s ease infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+@keyframes btn-shift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.btn::before{content:'';position:absolute;top:-50%;left:-100%;width:60%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transform:skewX(-20deg);animation:btn-shine 3s ease-in-out infinite;}
+@keyframes btn-shine{0%,100%{left:-100%;}50%{left:150%;}}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.45;cursor:not-allowed;animation:none;box-shadow:none;}
+.btn:disabled::before{display:none;}
+.occ{text-align:center;padding:20px 0;}
+.occ-icon{font-size:60px;margin-bottom:16px;animation:occ-pulse 1.8s ease-in-out infinite;}
+@keyframes occ-pulse{0%,100%{filter:drop-shadow(0 0 0 rgba(239,68,68,0));}50%{filter:drop-shadow(0 0 18px rgba(239,68,68,.6));}}
+.occ h1{font-size:20px;margin-bottom:10px;}
+.occ p{color:var(--mu);font-size:14px;line-height:1.7;}
+.occ-timer{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--am);margin:12px 0;letter-spacing:.05em;}
+.occ-reset{margin-top:16px;padding:10px 20px;border-radius:9px;border:1px solid var(--rdbd);background:var(--rdb);color:var(--rd);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.occ-reset:hover{background:rgba(239,68,68,.2);}
+#ok-screen{display:none;}
+.ok{text-align:center;animation:ok-in .55s cubic-bezier(.34,1.4,.64,1);}
+@keyframes ok-in{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:none;}}
+.ok-icon{font-size:68px;margin-bottom:16px;display:block;animation:ok-pop .65s cubic-bezier(.34,1.56,.64,1) both,ok-float 3s ease-in-out .7s infinite;}
+@keyframes ok-pop{from{transform:scale(0) rotate(-20deg);}to{transform:scale(1) rotate(0);}}
+@keyframes ok-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.ok-title{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;margin-bottom:6px;background:linear-gradient(135deg,var(--gn),var(--cy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.ok-sub{font-size:13px;color:var(--mu);line-height:1.65;margin-bottom:18px;}
+.ok-card{background:var(--sf2);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;text-align:left;}
+.ok-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;}
+.ok-row:last-child{border:none;padding-top:10px;margin-top:4px;}
+.ok-k{color:var(--mu);font-size:12px;}
+.ok-v{font-weight:600;text-align:right;max-width:60%;word-break:break-word;}
+.ok-total{color:var(--gn);font-size:18px;font-weight:900;font-family:'Orbitron',sans-serif;}
+.ok-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.25);color:#a5b4fc;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.toast{position:fixed;bottom:calc(22px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(90px);background:var(--sf2);border:1px solid var(--ac);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all .35s cubic-bezier(.34,1.2,.64,1);pointer-events:none;box-shadow:0 8px 32px var(--ag);width:calc(100% - 32px);max-width:380px;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+@supports(padding-bottom:env(safe-area-inset-bottom)){body{padding-bottom:calc(20px + env(safe-area-inset-bottom));}}
+</style>
+</head>
+<body>
+<div id="bgc"></div>
+<div class="grid-bg"></div>
+<div class="orb" style="width:400px;height:400px;top:-100px;left:-120px;background:radial-gradient(circle,rgba(99,102,241,.14),transparent 70%);"></div>
+<div class="orb" style="width:300px;height:300px;bottom:-80px;right:-100px;background:radial-gradient(circle,rgba(6,182,212,.1),transparent 70%);animation-delay:-4s;"></div>
+<div class="card">
+  <div class="logo">
+    <div class="logo-ic">🎮</div>
+    <div>
+      <div class="logo-name">NextGen Arcade</div>
+      <div class="logo-role">Customer Self Check-In</div>
+    </div>
+  </div>
+  <div id="root"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  var P    = new URLSearchParams(location.search);
+  var SID  = parseInt(P.get('station')) || 1;
+  var RATE = parseFloat(P.get('rate'))  || 200;
+  var curPay = 'mpesa';
+  var KEY  = 'nga_st_' + SID;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Number(n).toLocaleString('en-KE'); };
+  var calcCharge = function(m){ return Math.round((m/60)*RATE); };
+
+  function showToast(msg, type){
+    var t=$('toast');
+    t.textContent=msg;
+    t.style.borderColor=type==='err'?'var(--rd)':type==='ok'?'var(--gn)':'var(--ac)';
+    t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){t.classList.remove('show');},3800);
+  }
+
+  function getGames(){
+    try{
+      return JSON.parse(localStorage.getItem('nga_games')||'null')||
+        ['EA FC 25','Call of Duty: Black Ops 6','NBA 2K25',
+         'God of War Ragnarok','GTA V','Mortal Kombat 1',
+         'Spider-Man 2','Gran Turismo 7','Hogwarts Legacy','Elden Ring'];
+    }catch(e){return [];}
+  }
+
+  // ── AUTO-EXPIRE: clear stale occupied flags ──────────────────────
+  function cleanStale(){
+    try{
+      var d=JSON.parse(localStorage.getItem(KEY)||'{}');
+      // If endTime has passed, clear it automatically
+      if(d.occupied && d.endTime && Date.now() > d.endTime){
+        localStorage.removeItem(KEY);
+        return false;
+      }
+      return d.occupied === true;
+    }catch(e){ return false; }
+  }
+
+  function getOccupiedData(){
+    try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }
+    catch(e){ return {}; }
+  }
+
+  function clearStation(){
+    localStorage.removeItem(KEY);
+    // also remove from pending
+    try{
+      var pend=JSON.parse(localStorage.getItem('nga_pending')||'[]');
+      pend=pend.filter(function(p){ return p.station !== SID; });
+      localStorage.setItem('nga_pending',JSON.stringify(pend));
+    }catch(e){}
+    render();
+  }
+
+  // ── PARTICLES ────────────────────────────────────────────────────
+  var bgc=$('bgc');
+  var syms=['●','◆','▲','★','✦'];
+  var cols=['#6366f1','#8b5cf6','#06b6d4','#10b981','#ec4899','#f59e0b'];
+  for(var pi=0;pi<35;pi++){
+    var el=document.createElement('div'); el.className='pt';
+    var sz=Math.random()*5+2;
+    var col=cols[Math.floor(Math.random()*cols.length)];
+    var txt=Math.random()>.55;
+    el.style.cssText=(txt
+      ?'font-size:'+sz+'px;color:'+col+';text-shadow:0 0 '+(sz*3)+'px '+col+';'
+      :'width:'+sz+'px;height:'+sz+'px;border-radius:'+(Math.random()>.5?'50%':'3px')+';background:'+col+';box-shadow:0 0 '+(sz*3)+'px '+col+';')
+      +'left:'+Math.random()*100+'%;'
+      +'animation-duration:'+(Math.random()*18+9)+'s;'
+      +'animation-delay:'+(Math.random()*15)+'s;';
+    if(txt) el.textContent=syms[Math.floor(Math.random()*syms.length)];
+    bgc.appendChild(el);
+  }
+
+  var DURS=[{v:30,l:'30 min'},{v:60,l:'1 hour'},{v:90,l:'1.5 hrs'},{v:120,l:'2 hours'},{v:180,l:'3 hours'}];
+
+  // ── RENDER ───────────────────────────────────────────────────────
+  function render(){
+    var root=$('root');
+    var occupied=cleanStale();
+
+    if(occupied){
+      var d=getOccupiedData();
+      var remaining='';
+      if(d.endTime){
+        var left=Math.max(0,d.endTime-Date.now());
+        var m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+        remaining=m>0?m+'m '+s+'s remaining':s+'s remaining';
+      }
+      root.innerHTML=
+        '<div class="occ">'
+        +'<div class="st-badge">🎮 PS5 STATION '+SID+'</div>'
+        +'<div class="occ-icon">🔴</div>'
+        +'<h1>Station Occupied</h1>'
+        +'<p>This PS5 is currently in use.<br>Please ask a staff member for an available station.</p>'
+        +(remaining?'<div class="occ-timer">⏱ '+remaining+'</div>':'')
+        +'<button class="occ-reset" id="occ-reset-btn">🔄 I am staff — Reset this station</button>'
+        +'</div>';
+      $('occ-reset-btn').addEventListener('click', function(){
+        if(confirm('Reset station '+SID+' to available? Only do this if the session has ended.')){
+          clearStation();
+        }
+      });
+      // auto-refresh every 30s to check expiry
+      setTimeout(render, 30000);
+      return;
+    }
+
+    var games=getGames();
+    var gOpts='<option value="">Select a game\u2026</option>'
+      +games.map(function(g,i){
+        return '<option value="'+esc(g)+'">'+'G'+('00'+(i+1)).slice(-3)+' \u00b7 '+esc(g)+'</option>';
+      }).join('');
+    var dOpts=DURS.map(function(d){
+      return '<option value="'+d.v+'"'+(d.v===60?' selected':'')+'>'+d.l+'</option>';
+    }).join('');
+
+    root.innerHTML=
+      '<div class="st-badge">🎮 PS5 STATION '+SID+'</div>'
+      +'<h1>Check In</h1>'
+      +'<p class="sub-txt">Fill in your details to start your session.</p>'
+      +'<div class="fg"><label>Your Name</label>'
+      +'<input type="text" id="ci-name" placeholder="e.g. Alex Kamau" autocomplete="off" autocorrect="off" autocapitalize="words"/></div>'
+      +'<div class="fg"><label>Game to Play</label>'
+      +'<select id="ci-game">'+gOpts+'</select></div>'
+      +'<div class="fg"><label>Session Duration</label>'
+      +'<select id="ci-dur">'+dOpts+'</select></div>'
+      +'<div class="fg"><label>Payment Method</label>'
+      +'<div class="pay-row">'
+      +'<div class="po active" id="po-mpesa"><span class="po-icon">📱</span><span class="po-label">M-Pesa</span><span class="po-sub">STK Push</span></div>'
+      +'<div class="po" id="po-cash"><span class="po-icon">💵</span><span class="po-label">Cash</span><span class="po-sub">Pay at counter</span></div>'
+      +'</div></div>'
+      +'<div id="ph-wrap" class="open"><label>M-Pesa Phone Number</label>'
+      +'<input type="tel" id="ci-phone" placeholder="e.g. 0712345678" inputmode="numeric"/></div>'
+      +'<div class="pbox" style="flex-direction:column;gap:4px;">'
+      +'<div style="display:flex;justify-content:space-between;width:100%;"><span class="pbox-label">Amount to Pay</span>'
+      +'<span class="pbox-val" id="ci-price">KES '+fmt(calcCharge(60))+'</span></div>'
+      +'<div id="price-breakdown" style="font-size:11px;color:var(--mu);width:100%;text-align:right;"></div>'
+      +'</div>'
+      +'<div id="stk-wrap"></div>'
+      +'<button class="btn" id="ci-btn">&#9654;&#160;&#160;START SESSION</button>'
+      +'<div id="ok-screen"></div>';
+
+    $('ci-dur').addEventListener('change',updatePrice);
+    $('po-mpesa').addEventListener('click',function(){setPay('mpesa');});
+    $('po-cash').addEventListener('click',function(){setPay('cash');});
+    $('ci-btn').addEventListener('click',handleSubmit);
+  }
+
+  function setPay(m){
+    curPay=m;
+    var pm=$('po-mpesa'),pc=$('po-cash'),pw=$('ph-wrap');
+    pm.classList.toggle('active',m==='mpesa');
+    pc.classList.toggle('active',m==='cash');
+    if(m==='mpesa'){pw.classList.remove('shut');pw.classList.add('open');}
+    else{pw.classList.remove('open');pw.classList.add('shut');}
+    updatePrice();
+  }
+
+  function updatePrice(){
+    var d=$('ci-dur'),e=$('ci-price'),bd=$('price-breakdown'),gEl=$('ci-game');
+    if(!d||!e) return;
+    var dur=parseInt(d.value)||60;
+    var game=gEl?gEl.value:'';
+    var localCharge=calcCharge(dur);
+    e.textContent='KES '+fmt(localCharge);
+    // Fetch accurate breakdown from API if available
+    if(window.ngApi && game){
+      window.ngApi.estimateCharge(game, dur).then(function(res){
+        if(!res) return;
+        e.textContent='KES '+fmt(res.total);
+        if(bd){
+          var parts=[];
+          if(res.time_fee>0) parts.push('Time: KES '+res.time_fee.toLocaleString());
+          if(res.game_fee>0) parts.push(game+' surcharge: +KES '+res.game_fee.toLocaleString());
+          bd.textContent=parts.join(' | ');
+          bd.style.color=res.game_fee>0?'#f59e0b':'var(--mu)';
+        }
+      });
+    } else {
+      if(bd) bd.textContent='';
+    }
+  }
+
+  function shake(id){
+    var el=$(id);if(!el)return;
+    el.classList.remove('input-err');void el.offsetWidth;
+    el.classList.add('input-err');
+    setTimeout(function(){el.classList.remove('input-err');},700);
+  }
+
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function handleSubmit(){
+    var name=($('ci-name').value||'').trim();
+    var game=$('ci-game').value;
+    var dur=parseInt($('ci-dur').value)||60;
+    var phEl=$('ci-phone');
+    var phone=phEl?(phEl.value||'').trim():'';
+    var charge=calcCharge(dur);
+    if(!name){shake('ci-name');showToast('Please enter your name','err');return;}
+    if(!game){shake('ci-game');showToast('Please select a game','err');return;}
+    if(curPay==='mpesa'&&!phone){shake('ci-phone');showToast('Please enter your M-Pesa number','err');return;}
+    doBook(name,game,dur,phone,charge);
+  }
+
+  function doBook(name,game,dur,phone,charge){
+    var btn=$('ci-btn'),sw=$('stk-wrap');
+    btn.disabled=true;
+
+    function save(){
+      var bk={
+        occupied:true,player:name,game:game,duration:dur,
+        startTime:Date.now(),endTime:Date.now()+dur*60*1000,
+        charge:charge,payMethod:curPay==='mpesa'?'M-Pesa':'Cash',selfCheckin:true
+      };
+      try{localStorage.setItem(KEY,JSON.stringify(bk));}catch(e){}
+      try{
+        var pend=JSON.parse(localStorage.getItem('nga_pending')||'[]');
+        pend.push(Object.assign({station:SID,ts:Date.now()},bk));
+        localStorage.setItem('nga_pending',JSON.stringify(pend));
+      }catch(e){}
+      btn.style.display='none';
+      sw.innerHTML='';
+      showSuccess(name,game,dur,charge);
+    }
+
+    if(curPay==='mpesa'){
+      sw.innerHTML='<div class="stk-box stk-warn"><span class="spin">&#8635;</span> Sending M-Pesa request to '+esc(phone)+'&#8230;</div>';
+      setTimeout(function(){
+        var ok=Math.random()>0.15;
+        if(!ok){
+          sw.innerHTML='<div class="stk-box stk-err">&#10060; Payment failed. Try again or pay cash.</div>';
+          btn.disabled=false;return;
+        }
+        sw.innerHTML='<div class="stk-box stk-warn"><span class="spin">&#8635;</span> Awaiting confirmation&#8230;</div>';
+        setTimeout(function(){
+          sw.innerHTML='<div class="stk-box stk-ok">&#10004; KES '+fmt(charge)+' confirmed!</div>';
+          setTimeout(save,900);
+        },2200);
+      },2600);
+    }else{save();}
+  }
+
+  function showSuccess(name,game,dur,charge){
+    var ok=$('ok-screen');
+    ok.style.display='block';
+    ok.innerHTML=
+      '<div class="ok"><span class="ok-icon">&#9989;</span>'
+      +'<div class="ok-title">YOU\'RE IN!</div>'
+      +'<p class="ok-sub">Show this screen to staff<br>to activate your station.</p>'
+      +'<div class="ok-card">'
+      +'<div class="ok-row"><span class="ok-k">Station</span><span class="ok-v"><span class="ok-tag">&#127918; PS5 #'+SID+'</span></span></div>'
+      +'<div class="ok-row"><span class="ok-k">Player</span><span class="ok-v">'+esc(name)+'</span></div>'
+      +'<div class="ok-row"><span class="ok-k">Game</span><span class="ok-v">'+esc(game)+'</span></div>'
+      +'<div class="ok-row"><span class="ok-k">Duration</span><span class="ok-v">'+dur+' minutes</span></div>'
+      +'<div class="ok-row"><span class="ok-k">Payment</span><span class="ok-v">'+(curPay==='mpesa'?'M-Pesa &#10003;':'Cash at counter')+'</span></div>'
+      +'<div class="ok-row"><span class="ok-k">Total</span><span class="ok-v ok-total">KES '+fmt(charge)+'</span></div>'
+      +'</div></div>';
+    ok.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  render();
+})();
+</script>
+<script src="/api.js"></script>
+</body>
+</html>
