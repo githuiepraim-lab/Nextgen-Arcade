@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NextGen Arcade - Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg:#04040a;--sf:#0d0d18;--sf2:#12121f;--sf3:#1a1a2e;
+  --bd:rgba(139,92,246,.14);--bd2:rgba(139,92,246,.3);
+  --tx:#e8e8f0;--mu:#7070a0;
+  --ac:#8b5cf6;--ac2:#ec4899;--ag:rgba(139,92,246,.22);
+  --gn:#10b981;--gnb:rgba(16,185,129,.12);
+  --am:#f59e0b;--amb:rgba(245,158,11,.12);
+  --rd:#ef4444;--rdb:rgba(239,68,68,.1);
+  --cy:#06b6d4;--pk:#ec4899;
+  --R:10px;--RL:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
+.bgc{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.pt{position:absolute;border-radius:50%;animation:flt linear infinite;opacity:0;}
+@keyframes flt{0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:1;}90%{opacity:.5;}100%{transform:translateY(-10vh);opacity:0;}}
+.gl{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(139,92,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.04) 1px,transparent 1px);background-size:60px 60px;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;animation:porb 6s ease-in-out infinite;}
+@keyframes porb{0%,100%{opacity:.3;}50%{opacity:.55;}}
+/* ── LOGIN ── */
+#ls{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
+.lc{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--RL);padding:36px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 0 80px rgba(139,92,246,.15);animation:ci .4s ease;position:relative;z-index:1;}
+@keyframes ci{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.li{font-size:44px;margin-bottom:16px;filter:drop-shadow(0 0 16px rgba(139,92,246,.6));}
+.lt{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;background:linear-gradient(90deg,var(--ac),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.ls2{font-size:12px;color:var(--mu);margin-bottom:28px;}
+.pd{display:flex;justify-content:center;gap:9px;margin-bottom:24px;}
+.dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--bd2);transition:all .2s;}
+.dot.on{background:var(--ac);border-color:var(--ac);box-shadow:0 0 8px var(--ag);}
+.pp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.pk{background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:16px;font-size:18px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--tx);}
+.pk:hover{background:var(--sf3);border-color:var(--ac);color:var(--ac);}
+.pk:active{transform:scale(.95);}
+.pk.del{color:var(--rd);font-size:13px;}
+.pe{color:var(--rd);font-size:12px;margin-top:8px;min-height:18px;}
+.lm{color:var(--rd);font-size:12px;padding:10px;background:var(--rdb);border:1px solid rgba(239,68,68,.25);border-radius:8px;margin-top:10px;}
+.shake{animation:shk .4s ease;}
+@keyframes shk{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-8px);}40%,80%{transform:translateX(8px);}}
+.staff-link{margin-top:18px;font-size:11px;color:var(--mu);}
+.staff-link a{color:var(--ac);text-decoration:none;}
+/* ── APP ── */
+#app{display:none;position:relative;z-index:1;}
+header{position:sticky;top:0;z-index:100;background:rgba(4,4,10,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.lic{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--ac),var(--pk));display:flex;align-items:center;justify-content:center;font-size:15px;animation:lg 3s ease-in-out infinite;}
+@keyframes lg{0%,100%{box-shadow:0 0 10px var(--ag);}50%{box-shadow:0 0 22px rgba(139,92,246,.5);}}
+.ltt{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;background:linear-gradient(90deg,var(--ac),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.lts{font-size:9px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-top:1px;}
+.nav{display:flex;gap:2px;background:var(--sf2);padding:3px;border-radius:9px;border:1px solid var(--bd);}
+.nb{background:none;border:none;color:var(--mu);font-size:11px;font-weight:500;padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.nb.on{background:linear-gradient(135deg,var(--ac),var(--pk));color:#fff;box-shadow:0 2px 10px var(--ag);}
+.hr{display:flex;align-items:center;gap:12px;}
+.clk{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--cy);}
+.lob{padding:5px 11px;border-radius:7px;border:1px solid var(--bd2);background:none;color:var(--mu);font-size:11px;cursor:pointer;transition:all .15s;}
+.lob:hover{border-color:var(--rd);color:var(--rd);}
+main{max-width:1280px;margin:0 auto;padding:24px;position:relative;z-index:1;}
+.pg{display:none;animation:fi .3s ease;}.pg.on{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.sct{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--ac);margin-bottom:16px;}
+/* KPI */
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.kc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--RL);padding:22px;position:relative;overflow:hidden;}
+.kc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,.06),transparent);pointer-events:none;}
+.kc::after{content:'';position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:50%;filter:blur(28px);}
+.kc.pu::after{background:rgba(139,92,246,.35);}.kc.gn::after{background:rgba(16,185,129,.35);}
+.kc.cy::after{background:rgba(6,182,212,.35);}.kc.pk::after{background:rgba(236,72,153,.35);}
+.kc.am::after{background:rgba(245,158,11,.35);}
+.kl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.kv{font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;margin-bottom:6px;}
+.ks{font-size:12px;color:var(--mu);}
+.kc.pu .kv{background:linear-gradient(135deg,var(--ac),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.kc.gn .kv{color:var(--gn);}.kc.cy .kv{color:var(--cy);}
+.kc.pk .kv{color:var(--pk);}.kc.am .kv{color:var(--am);}
+/* Charts */
+.ch2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.cc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--RL);padding:18px 22px;}
+.cc h3{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;}
+.gr{display:flex;align-items:center;gap:11px;padding:5px 0;}
+.gn2{width:165px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gbw{flex:1;background:var(--sf2);border-radius:4px;height:6px;overflow:hidden;}
+.gb{height:100%;background:linear-gradient(90deg,var(--ac),var(--pk));border-radius:4px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.gco{font-size:11px;color:var(--mu);min-width:55px;text-align:right;}
+.dnut{display:flex;align-items:center;gap:22px;}
+.dl{display:flex;flex-direction:column;gap:10px;}
+.dr{display:flex;align-items:center;gap:8px;font-size:13px;}
+.dd{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+/* Heatmap */
+.hm{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.hmc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:11px 6px;text-align:center;}
+.hmn{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--mu);margin-bottom:7px;}
+.hms{font-size:11px;color:var(--mu);margin-top:6px;}
+/* Settings */
+.sg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.sc-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--RL);padding:20px;}
+.sc-card h3{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
+.fg{margin-bottom:13px;}
+label{display:block;font-size:10px;color:var(--mu);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+input,select{width:100%;background:var(--sf2);border:1px solid var(--bd2);border-radius:7px;color:var(--tx);font-size:13px;padding:9px 12px;outline:none;transition:all .15s;font-family:'Inter',sans-serif;}
+input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(139,92,246,.1);}
+.bts{padding:10px 20px;border-radius:8px;background:linear-gradient(135deg,var(--ac),var(--pk));color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px;transition:opacity .15s;}
+.bts:hover{opacity:.88;}
+/* Games list */
+.gl2{display:flex;flex-direction:column;gap:7px;max-height:280px;overflow-y:auto;}
+.gi{display:flex;align-items:center;justify-content:space-between;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:7px 11px;font-size:13px;}
+.gid{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--ac);margin-right:7px;}
+.db{background:none;border:none;color:var(--rd);cursor:pointer;padding:2px 5px;border-radius:4px;font-size:13px;}
+.db:hover{background:var(--rdb);}
+.agr{display:flex;gap:8px;margin-top:10px;}
+.agr input{flex:1;}
+.agr button{padding:9px 13px;border-radius:7px;background:linear-gradient(135deg,var(--ac),var(--pk));color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer;}
+/* Log */
+.fr{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.fr select,.fr input{width:auto;flex:1;min-width:120px;}
+.eb{padding:7px 14px;border-radius:7px;border:1px solid var(--gn);background:var(--gnb);color:var(--gn);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.eb:hover{background:rgba(16,185,129,.2);}
+.sch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;font-weight:600;text-align:left;padding:7px 11px;border-bottom:1px solid var(--bd);}
+td{padding:9px 11px;border-bottom:1px solid var(--bd);font-size:13px;}
+tr:hover td{background:var(--sf2);}
+.bx{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.bx-b{background:rgba(139,92,246,.15);color:#c4b5fd;}
+.bx-g{background:var(--gnb);color:var(--gn);}
+.bx-a{background:var(--amb);color:var(--am);}
+.es{text-align:center;padding:40px;color:var(--mu);font-size:13px;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--sf2);border:1px solid var(--ac);border-radius:var(--R);padding:11px 16px;font-size:13px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;box-shadow:0 4px 24px var(--ag);}
+.toast.on{transform:translateY(0);opacity:1;}
+.dv{border:none;border-top:1px solid var(--bd);margin:14px 0;}
+.dng{padding:10px 16px;border-radius:8px;background:var(--rdb);color:var(--rd);border:1px solid rgba(239,68,68,.3);font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;}
+.dng:hover{opacity:.8;}
+@media(max-width:768px){.kpi{grid-template-columns:1fr 1fr;}.ch2{grid-template-columns:1fr;}.sg2{grid-template-columns:1fr;}.hm{grid-template-columns:repeat(4,1fr);}.nb{font-size:10px;padding:4px 7px;}}
+</style>
+</head>
+<body>
+<div class="bgc" id="bgc"></div>
+<div class="gl"></div>
+<div class="orb" style="width:500px;height:500px;top:-150px;left:-150px;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);"></div>
+<div class="orb" style="width:350px;height:350px;bottom:-100px;right:-100px;background:radial-gradient(circle,rgba(236,72,153,.08),transparent 70%);animation-delay:-3s;"></div>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="orb" style="width:400px;height:400px;top:-100px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(139,92,246,.15),transparent 70%);"></div>
+  <div class="lc">
+    <div class="li">&#x1F451;</div>
+    <div class="lt">Admin Access</div>
+    <div class="ls2">NextGen Arcade &mdash; Enter 6-Digit PIN</div>
+    <div class="pd" id="pd">
+      <div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div><div class="dot" id="d4"></div><div class="dot" id="d5"></div>
+    </div>
+    <div class="pp">
+      <div class="pk" onclick="pinPress('1')">1</div><div class="pk" onclick="pinPress('2')">2</div><div class="pk" onclick="pinPress('3')">3</div>
+      <div class="pk" onclick="pinPress('4')">4</div><div class="pk" onclick="pinPress('5')">5</div><div class="pk" onclick="pinPress('6')">6</div>
+      <div class="pk" onclick="pinPress('7')">7</div><div class="pk" onclick="pinPress('8')">8</div><div class="pk" onclick="pinPress('9')">9</div>
+      <div class="pk del" onclick="pinDel()">&#x232B;</div><div class="pk" onclick="pinPress('0')">0</div><div class="pk" onclick="pinSubmit()">&#x21B5;</div>
+    </div>
+    <div class="pe" id="pe"></div>
+    <div id="lm"></div>
+    <div class="staff-link">Staff dashboard: <a href="staff.html">staff.html</a></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<header>
+  <div class="logo">
+    <div class="lic">&#x1F451;</div>
+    <div><div class="ltt">NextGen Arcade</div><div class="lts">Admin Panel</div></div>
+  </div>
+  <nav class="nav">
+    <button class="nb on" onclick="showPg('dashboard',this)">Dashboard</button>
+    <button class="nb" onclick="showPg('log',this)">Full Log</button>
+    <button class="nb" onclick="showPg('games',this)">Games</button>
+    <button class="nb" onclick="showPg('integrity',this)">🔍 Integrity</button>
+    <button class="nb" onclick="showPg('settings',this)">Settings</button>
+  </nav>
+  <div class="hr">
+    <div class="clk" id="clk"></div>
+    <button class="lob" onclick="logout()">Logout</button>
+  </div>
+</header>
+<main>
+  <!-- DASHBOARD -->
+  <div class="pg on" id="pg-dashboard">
+    <div class="sct">Overview &mdash; NextGen Arcade</div>
+    <div class="kpi">
+      <div class="kc pu"><div class="kl">Total Sessions</div><div class="kv" id="kv-sess">0</div><div class="ks">all time</div></div>
+      <div class="kc gn"><div class="kl">Total Revenue</div><div class="kv" id="kv-rev" style="font-size:22px">KES 0</div><div class="ks">all sessions</div></div>
+      <div class="kc cy"><div class="kl">Hours Played</div><div class="kv" id="kv-hrs">0</div><div class="ks">across all stations</div></div>
+      <div class="kc pk"><div class="kl">Sessions Today</div><div class="kv" id="kv-today">0</div><div class="ks" id="kv-trev">KES 0 today</div></div>
+      <div class="kc am"><div class="kl">Avg Session</div><div class="kv" id="kv-avg" style="font-size:22px">0 min</div><div class="ks">per booking</div></div>
+      <div class="kc pu"><div class="kl">Games Library</div><div class="kv" id="kv-games">0</div><div class="ks">titles available</div></div>
+    </div>
+    <div class="ch2">
+      <div class="cc"><h3>Top games by sessions</h3><div id="game-chart"><div class="es">No sessions yet.</div></div></div>
+      <div class="cc"><h3>Payment split</h3>
+        <div class="dnut">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#1a1a2e" stroke-width="18"/>
+            <circle id="dn-m" cx="55" cy="55" r="40" fill="none" stroke="#10b981" stroke-width="18" stroke-dasharray="0 251" stroke-dashoffset="63" style="transition:stroke-dasharray .6s ease;transform:rotate(-90deg);transform-origin:55px 55px;"/>
+            <circle id="dn-c" cx="55" cy="55" r="40" fill="none" stroke="#f59e0b" stroke-width="18" stroke-dasharray="251 0" stroke-dashoffset="63" style="transition:all .6s ease;transform:rotate(-90deg);transform-origin:55px 55px;"/>
+          </svg>
+          <div class="dl">
+            <div class="dr"><div class="dd" style="background:var(--gn)"></div><div><div style="font-weight:600" id="lg-m">M-Pesa (0)</div><div style="font-size:11px;color:var(--mu)" id="lg-mp">0%</div></div></div>
+            <div class="dr"><div class="dd" style="background:var(--am)"></div><div><div style="font-weight:600" id="lg-c">Cash (0)</div><div style="font-size:11px;color:var(--mu)" id="lg-cp">0%</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cc"><h3>Sessions per station</h3><div class="hm" id="heatmap"></div></div>
+  </div>
+
+  <!-- LOG -->
+  <div class="pg" id="pg-log">
+    <div class="sch">
+      <div class="sct" style="margin:0">Full Session Log</div>
+      <button class="eb" onclick="exportXL()">&#x2B07; Export Excel</button>
+    </div>
+    <div class="fr">
+      <select id="f-st" onchange="renderLog()"><option value="">All stations</option></select>
+      <select id="f-gm" onchange="renderLog()"><option value="">All games</option></select>
+      <select id="f-py" onchange="renderLog()"><option value="">All payments</option><option>Cash</option><option>M-Pesa</option></select>
+      <input type="date" id="f-dt" onchange="renderLog()"/>
+    </div>
+    <div id="log-wrap"></div>
+  </div>
+
+  <!-- GAMES -->
+  <div class="pg" id="pg-games">
+    <div class="sct">Game Library</div>
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--RL);padding:20px;max-width:580px;">
+      <div class="gl2" id="games-list"></div>
+      <div class="agr" style="margin-top:14px;">
+        <input type="text" id="new-game" placeholder="Enter game title..." onkeydown="if(event.key==='Enter')addGame()"/>
+        <button onclick="addGame()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="pg" id="pg-settings">
+    <div class="sct">System Settings</div>
+    <div class="sg2">
+      <div class="sc-card">
+        <h3>Pricing &amp; Info</h3>
+        <div class="fg"><label>Rate per hour (KES)</label><input type="number" id="s-rate" placeholder="200" min="0" step="50"/></div>
+        <div class="fg"><label>M-Pesa Till / Paybill</label><input type="text" id="s-till" placeholder="e.g. 522533"/></div>
+        <div class="fg"><label>Arcade Name</label><input type="text" id="s-name" value="NextGen Arcade"/></div>
+        <button class="bts" onclick="saveSettings()">Save Settings</button>
+      </div>
+      <div class="sc-card">
+        <h3>Change PINs</h3>
+        <div class="fg"><label>New Staff PIN (4 digits)</label><input type="password" id="p-staff" placeholder="4-digit staff PIN" maxlength="4"/></div>
+        <div class="fg"><label>New Admin PIN (6 digits)</label><input type="password" id="p-admin" placeholder="6-digit admin PIN" maxlength="6"/></div>
+        <button class="bts" onclick="changePins()">Update PINs</button>
+        <div class="dv"></div>
+        <h3>Danger Zone</h3>
+        <p style="font-size:12px;color:var(--mu);margin-bottom:12px;">Permanently deletes all session history.</p>
+        <button class="dng" onclick="clearAll()">&#x1F5D1; Clear All Session Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTEGRITY LOG PAGE -->
+  <div class="pg" id="pg-integrity">
+    <div class="sct">AI Integrity Monitor</div>
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--RL);padding:18px 22px;margin-bottom:16px;">
+      <div style="font-size:12px;color:var(--mu);line-height:1.7;margin-bottom:14px;">
+        🤖 The AI randomly schedules <strong style="color:var(--tx)">4 spot-check alerts</strong> per session at unpredictable times.
+        Each alert is sent to your phone so you can verify the correct player is on the correct PS5 via CCTV.
+        Checks are spread across the session duration — the AI picks random moments within each quarter of the session.
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:0;">
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-family:Orbitron,sans-serif;font-size:22px;font-weight:700;color:var(--ac);" id="ig-total">0</div>
+          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Checks Today</div>
+        </div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-family:Orbitron,sans-serif;font-size:22px;font-weight:700;color:var(--gn);" id="ig-verified">0</div>
+          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Verified</div>
+        </div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-family:Orbitron,sans-serif;font-size:22px;font-weight:700;color:var(--am);" id="ig-pending-count">0</div>
+          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Unverified</div>
+        </div>
+      </div>
+    </div>
+    <div id="integrity-log-wrap">
+      <div style="text-align:center;padding:40px;color:var(--mu);font-size:13px;">Loading integrity log...</div>
+    </div>
+  </div>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+
+(function(){
+// ── SECURITY: 6-digit PIN, 4 max attempts, 10-min lockout, 4-hr session ──────
+let ADMIN_PIN = localStorage.getItem('nga_admin_pin') || '112233';
+const MX=4, LK=10*60*1000, SS=4*60*60*1000;
+let pinBuf='', att=parseInt(sessionStorage.getItem('nga_adm_att')||'0');
+let lkUntil=parseInt(sessionStorage.getItem('nga_adm_lk')||'0');
+function isLk(){return Date.now()<lkUntil;}
+function chkAuto(){const t=parseInt(sessionStorage.getItem('nga_adm_s')||'0');if(t&&Date.now()-t<SS)unlock();}
+function pinPress(d){if(isLk()||pinBuf.length>=6)return;pinBuf+=d;dots();if(pinBuf.length===6)setTimeout(submit,200);}
+function pinDel(){pinBuf=pinBuf.slice(0,-1);dots();document.getElementById('pe').textContent='';}
+function dots(){for(let i=0;i<6;i++)document.getElementById('d'+i).classList.toggle('on',i<pinBuf.length);}
+function submit(){
+  if(isLk())return;
+  if(pinBuf===ADMIN_PIN){
+    att=0;sessionStorage.setItem('nga_adm_att','0');
+    sessionStorage.setItem('nga_adm_s',Date.now());unlock();
+  }else{
+    att++;sessionStorage.setItem('nga_adm_att',att);
+    pinBuf='';dots();
+    const lc=document.querySelector('.lc');lc.classList.add('shake');setTimeout(()=>lc.classList.remove('shake'),400);
+    const left=MX-att;
+    if(att>=MX){
+      lkUntil=Date.now()+LK;sessionStorage.setItem('nga_adm_lk',lkUntil);startLk();
+    }else{
+      document.getElementById('pe').textContent='Wrong PIN. '+left+' attempt'+(left!==1?'s':'')+' left.';
+    }
+  }
+}
+function startLk(){
+  const t=()=>{
+    const left=Math.max(0,lkUntil-Date.now());
+    if(!left){att=0;sessionStorage.setItem('nga_adm_att','0');document.getElementById('lm').innerHTML='';document.getElementById('pe').textContent='';return;}
+    const m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+    document.getElementById('lm').innerHTML='<div class="lm">&#x1F512; Locked for '+m+':'+String(s).padStart(2,'0')+'</div>';
+    setTimeout(t,1000);
+  };t();
+}
+// Alias for onclick
+function pinSubmit(){submit();}
+function unlock(){document.getElementById('ls').style.display='none';document.getElementById('app').style.display='block';init();}
+function logout(){
+  sessionStorage.removeItem('nga_adm_s');pinBuf='';att=0;dots();
+  document.getElementById('pe').textContent='';document.getElementById('lm').innerHTML='';
+  document.getElementById('ls').style.display='flex';document.getElementById('app').style.display='none';
+}
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+let SL=[],GL=[],ST={};
+function load(){
+  try{SL=JSON.parse(localStorage.getItem('nga_sessions')||'[]');}catch(e){SL=[];}
+  try{GL=JSON.parse(localStorage.getItem('nga_games')||'null')||['EA FC 25','CoD: Black Ops 6','NBA 2K25','God of War Ragnarok','GTA V','Mortal Kombat 1','Spider-Man 2','Gran Turismo 7','Hogwarts Legacy','Elden Ring'];}catch(e){}
+  try{ST=JSON.parse(localStorage.getItem('nga_settings')||'{}');}catch(e){}
+  const ri=document.getElementById('s-rate');if(ri&&ST.rate)ri.value=ST.rate;
+  const ti=document.getElementById('s-till');if(ti&&ST.till)ti.value=ST.till;
+  const ni=document.getElementById('s-name');if(ni&&ST.name)ni.value=ST.name;
+}
+function saveGames(){localStorage.setItem('nga_games',JSON.stringify(GL));}
+function saveSettings(){
+  const s={rate:document.getElementById('s-rate').value,till:document.getElementById('s-till').value,name:document.getElementById('s-name').value};
+  localStorage.setItem('nga_settings',JSON.stringify(s));toast('Settings saved!');
+}
+function changePins(){
+  const sp=document.getElementById('p-staff').value.trim();
+  const ap=document.getElementById('p-admin').value.trim();
+  if(sp){if(sp.length===4){localStorage.setItem('nga_staff_pin',sp);toast('Staff PIN updated');}else{toast('Staff PIN must be 4 digits');return;}}
+  if(ap){if(ap.length===6){ADMIN_PIN=ap;localStorage.setItem('nga_admin_pin',ap);toast('Admin PIN updated');}else{toast('Admin PIN must be 6 digits');return;}}
+}
+function clearAll(){
+  if(!confirm('Delete ALL session data? Cannot be undone.'))return;
+  SL=[];localStorage.removeItem('nga_sessions');
+  renderDash();renderLog();toast('All session data cleared.');
+}
+const fmt=n=>Number(n).toLocaleString();
+const toDay=()=>new Date().toLocaleDateString('en-KE');
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3500);}
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function showPg(p,btn){
+  document.querySelectorAll('.pg').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(e=>e.classList.remove('on'));
+  document.getElementById('pg-'+p).classList.add('on');btn.classList.add('on');
+  if(p==='dashboard')renderDash();
+  if(p==='log')renderLog();
+  if(p==='games')renderGames();
+}
+function renderDash(){
+  load();
+  const tot=SL.length,rev=SL.reduce((a,r)=>a+r.charge,0);
+  const hrs=(SL.reduce((a,r)=>a+r.duration,0)/60).toFixed(1);
+  const tdy=SL.filter(r=>r.date===toDay());
+  const avg=tot?Math.round(SL.reduce((a,r)=>a+r.duration,0)/tot):0;
+  document.getElementById('kv-sess').textContent=tot;
+  document.getElementById('kv-rev').textContent='KES '+fmt(rev);
+  document.getElementById('kv-hrs').textContent=hrs;
+  document.getElementById('kv-today').textContent=tdy.length;
+  document.getElementById('kv-trev').textContent='KES '+fmt(tdy.reduce((a,r)=>a+r.charge,0))+' today';
+  document.getElementById('kv-avg').textContent=avg+' min';
+  document.getElementById('kv-games').textContent=GL.length;
+  // games chart
+  const cnt={};SL.forEach(r=>cnt[r.game]=(cnt[r.game]||0)+1);
+  const srt=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const mx=srt[0]?.[1]||1;
+  document.getElementById('game-chart').innerHTML=srt.length
+    ?srt.map(([g,c])=>'<div class="gr"><div class="gn2" title="'+g+'">'+g+'</div><div class="gbw"><div class="gb" style="width:'+Math.round(c/mx*100)+'%"></div></div><div class="gco">'+c+'</div></div>').join('')
+    :'<div class="es">No sessions yet.</div>';
+  // donut
+  var mpCount=SL.filter(r=>r.payMethod==='M-Pesa').length,cashCount=tot-mpCount,circ=251;
+  var mpArc=tot?Math.round((mpCount/tot)*circ):0,cashArc=circ-mpArc;
+  document.getElementById('dn-m').setAttribute('stroke-dasharray',mpArc+' '+(circ-mpArc));
+  document.getElementById('dn-m').setAttribute('stroke-dashoffset',63);
+  document.getElementById('dn-c').setAttribute('stroke-dasharray',cashArc+' '+(circ-cashArc));
+  document.getElementById('dn-c').setAttribute('stroke-dashoffset',63-mpArc);
+  document.getElementById('lg-m').textContent='M-Pesa ('+mpCount+')';
+  document.getElementById('lg-c').textContent='Cash ('+cashCount+')';
+  document.getElementById('lg-mp').textContent=tot?Math.round(mpCount/tot*100)+'%':'0%';
+  document.getElementById('lg-cp').textContent=tot?Math.round(cashCount/tot*100)+'%':'0%';
+  // heatmap
+  const st={};for(let i=1;i<=7;i++)st[i]=0;
+  SL.forEach(r=>{if(st[r.station]!==undefined)st[r.station]++;});
+  const mxS=Math.max(...Object.values(st),1);
+  document.getElementById('heatmap').innerHTML=Array.from({length:7},(_,i)=>{
+    const n=i+1,c=st[n],pct=Math.round(c/mxS*100);
+    const col=pct>75?'#8b5cf6':pct>50?'#6366f1':pct>25?'#06b6d4':'#2d2d44';
+    const h=Math.max(Math.round(pct*.6)+4,4);
+    return '<div class="hmc"><div class="hmn">PS5 #'+n+'</div><div style="width:100%;height:'+h+'px;background:'+col+';border-radius:3px;margin:4px 0;transition:height .4s ease;"></div><div class="hms">'+c+' sess.</div></div>';
+  }).join('');
+}
+function popFilters(){
+  const sf=document.getElementById('f-st');
+  if(sf)sf.innerHTML='<option value="">All stations</option>'+Array.from({length:7},(_,i)=>'<option value="'+(i+1)+'">Station '+(i+1)+'</option>').join('');
+  const gf=document.getElementById('f-gm');
+  if(gf)gf.innerHTML='<option value="">All games</option>'+GL.map(g=>'<option>'+g+'</option>').join('');
+}
+function renderLog(){
+  load();popFilters();
+  const sf=document.getElementById('f-st')?.value||'',gf=document.getElementById('f-gm')?.value||'';
+  const pf=document.getElementById('f-py')?.value||'',df=document.getElementById('f-dt')?.value||'';
+  let rows=SL.filter(r=>{
+    if(sf&&r.station!=sf)return false;
+    if(gf&&r.game!==gf)return false;
+    if(pf&&r.payMethod!==pf)return false;
+    if(df&&r.date!==new Date(df).toLocaleDateString('en-KE'))return false;
+    return true;
+  });
+  const w=document.getElementById('log-wrap');
+  if(!rows.length){w.innerHTML='<div class="es">No sessions match this filter.</div>';return;}
+  const tot=rows.reduce((a,r)=>a+r.charge,0);
+  w.innerHTML='<table><thead><tr><th>#</th><th>Station</th><th>Customer</th><th>ID</th><th>Game</th><th>Date</th><th>Time</th><th>Dur</th><th>Pay</th><th>Charge</th></tr></thead><tbody>'
+    +rows.map(r=>'<tr><td style="color:var(--mu)">'+r.id+'</td><td><span class="bx bx-b">PS5 #'+r.station+'</span></td><td>'+r.player+'</td><td style="color:var(--mu);font-size:11px">'+(r.cid||'&mdash;')+'</td><td>'+r.game+'</td><td>'+r.date+'</td><td>'+r.time+'</td><td>'+r.duration+'m</td><td><span class="bx '+(r.payMethod==='M-Pesa'?'bx-g':'bx-a')+'">'+r.payMethod+'</span></td><td><span class="bx bx-g">KES '+fmt(r.charge)+'</span></td></tr>').join('')
+    +'</tbody><tfoot><tr><td colspan="9" style="padding:9px 11px;color:var(--mu);font-size:12px">Total ('+rows.length+' sessions)</td><td style="padding:9px 11px;color:var(--gn);font-weight:700">KES '+fmt(tot)+'</td></tr></tfoot></table>';
+}
+function renderGames(){
+  document.getElementById('games-list').innerHTML=GL.map((g,i)=>'<div class="gi"><span><span class="gid">G'+String(i+1).padStart(3,'0')+'</span>'+g+'</span><button class="db" onclick="removeGame('+i+')">&#x2715;</button></div>').join('')||'<div style="color:var(--mu);font-size:13px;padding:8px">No games yet.</div>';
+}
+function addGame(){
+  const inp=document.getElementById('new-game');const name=inp.value.trim();
+  if(!name)return;if(GL.includes(name)){toast('Already in library');return;}
+  GL.push(name);saveGames();inp.value='';renderGames();toast('"'+name+'" added');
+}
+function removeGame(i){GL.splice(i,1);saveGames();renderGames();}
+function exportXL(){
+  if(!SL.length){toast('No data to export');return;}
+
+  // Sheet 1: Customer Summary
+  var customerMap = {};
+  SL.forEach(function(r){
+    var key = r.player + (r.cid ? '_'+r.cid : '');
+    if(!customerMap[key]){
+      customerMap[key] = {
+        'Customer Name': r.player, 'Customer ID': r.cid||'Walk-in',
+        'Phone': r.phone||'—', 'Total Sessions': 0, 'Total Minutes': 0,
+        'Total Spent (KES)': 0, 'Consoles Used': new Set(),
+        'Games Played': new Set(), 'First Visit': r.date, 'Last Visit': r.date,
+        'Preferred Payment': r.payMethod,
+      };
+    }
+    var c = customerMap[key];
+    c['Total Sessions']++; c['Total Minutes'] += r.duration;
+    c['Total Spent (KES)'] += r.charge;
+    c['Consoles Used'].add('PS5 #'+r.station);
+    c['Games Played'].add(r.game);
+    if(r.date > c['Last Visit']) c['Last Visit'] = r.date;
+  });
+  var custRows = Object.values(customerMap).map(function(c){
+    return {
+      'Customer Name': c['Customer Name'], 'Customer ID': c['Customer ID'],
+      'Phone': c['Phone'], 'Total Sessions': c['Total Sessions'],
+      'Total Time (min)': c['Total Minutes'],
+      'Total Time (hrs)': (c['Total Minutes']/60).toFixed(1),
+      'Total Spent (KES)': c['Total Spent (KES)'],
+      'Consoles Used': Array.from(c['Consoles Used']).join(', '),
+      'Games Played': Array.from(c['Games Played']).join(', '),
+      'First Visit': c['First Visit'], 'Last Visit': c['Last Visit'],
+      'Preferred Payment': c['Preferred Payment'],
+    };
+  }).sort(function(a,b){ return b['Total Spent (KES)'] - a['Total Spent (KES)']; });
+
+  // Sheet 2: All Sessions
+  var sessionRows = SL.map(function(r){
+    return {
+      'Session #': r.id, 'Station': 'PS5 #'+r.station,
+      'Customer': r.player, 'Customer ID': r.cid||'Walk-in',
+      'Phone': r.phone||'—', 'Game': r.game,
+      'Date': r.date, 'Time': r.time,
+      'Duration (min)': r.duration, 'Duration (hrs)': (r.duration/60).toFixed(2),
+      'Payment': r.payMethod, 'Charge (KES)': r.charge,
+      'Breakdown': r.breakdown||'',
+    };
+  });
+
+  // Sheet 3: Revenue by Station
+  var stMap = {};
+  for(var i=1;i<=7;i++) stMap[i]={station:'PS5 #'+i,sessions:0,total_mins:0,revenue:0};
+  SL.forEach(function(r){ if(stMap[r.station]){ stMap[r.station].sessions++; stMap[r.station].total_mins+=r.duration; stMap[r.station].revenue+=r.charge; } });
+  var stRows = Object.values(stMap).map(function(s){
+    return {'Station':s.station,'Sessions':s.sessions,'Total Hours':(s.total_mins/60).toFixed(1),'Revenue (KES)':s.revenue};
+  });
+
+  // Sheet 4: Revenue by Game
+  var gameMap = {};
+  SL.forEach(function(r){
+    if(!gameMap[r.game]) gameMap[r.game]={game:r.game,sessions:0,total_mins:0,revenue:0};
+    gameMap[r.game].sessions++; gameMap[r.game].total_mins+=r.duration; gameMap[r.game].revenue+=r.charge;
+  });
+  var gameRows = Object.values(gameMap).sort(function(a,b){return b.revenue-a.revenue;}).map(function(g){
+    return {'Game':g.game,'Sessions':g.sessions,'Total Hours':(g.total_mins/60).toFixed(1),'Revenue (KES)':g.revenue};
+  });
+
+  var wb = XLSX.utils.book_new();
+
+  var ws1 = XLSX.utils.json_to_sheet(custRows);
+  ws1['!cols']=[{wch:18},{wch:12},{wch:14},{wch:12},{wch:14},{wch:14},{wch:14},{wch:22},{wch:30},{wch:12},{wch:12},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,'Customer Summary',ws1);
+
+  var ws2 = XLSX.utils.json_to_sheet(sessionRows);
+  ws2['!cols']=[{wch:8},{wch:10},{wch:16},{wch:12},{wch:14},{wch:22},{wch:12},{wch:8},{wch:12},{wch:12},{wch:10},{wch:12},{wch:25}];
+  XLSX.utils.book_append_sheet(wb,'All Sessions',ws2);
+
+  var ws3 = XLSX.utils.json_to_sheet(stRows);
+  ws3['!cols']=[{wch:12},{wch:10},{wch:12},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,'Revenue by Station',ws3);
+
+  var ws4 = XLSX.utils.json_to_sheet(gameRows);
+  ws4['!cols']=[{wch:25},{wch:10},{wch:12},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,'Revenue by Game',ws4);
+
+  XLSX.writeFile(wb,'NextGen_Admin_Report_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  toast('Report downloaded! 4 sheets: Customers, Sessions, Stations, Games');
+}
+// BG particles
+(function(){
+  const c=document.getElementById('bgc');
+  const cols=['#8b5cf6','#6366f1','#ec4899','#06b6d4','#10b981'];
+  cols.forEach(col=>{
+    for(let i=0;i<5;i++){
+      const p=document.createElement('div');p.className='pt';
+      const s=Math.random()*4+2;
+      p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;background:'+col+';animation-duration:'+(Math.random()*15+10)+'s;animation-delay:'+(Math.random()*10)+'s;';
+      c.appendChild(p);
+    }
+  });
+})();
+function init(){load();popFilters();renderDash();tick();setInterval(tick,1000);setInterval(()=>{if(document.getElementById('pg-dashboard').classList.contains('on'))renderDash();},30000);}
+
+// ── expose to global scope for onclick handlers ──────────────────
+window.pinPress  = pinPress;
+window.pinDel    = pinDel;
+window.pinSubmit = submit;
+window.logout    = logout;
+window.showPg    = showPg;
+window.addGame   = addGame;
+window.removeGame= removeGame;
+window.saveSettings = saveSettings;
+window.changePins   = changePins;
+window.clearAll     = clearAll;
+window.exportXL     = exportXL;
+window.renderLog    = renderLog;
+
+
+// ── expose ALL onclick functions to global scope ──────────────────
+window.pinPress     = pinPress;
+window.pinDel       = pinDel;
+window.pinSubmit    = submit;
+window.submit       = submit;
+window.logout       = logout;
+window.showPg       = showPg;
+window.renderDash   = renderDash;
+window.renderLog    = renderLog;
+window.renderGames  = renderGames;
+
+// ── GAME LIBRARY WITH SURCHARGES ──────────────────────────────────
+var gameSurcharges = {}; // name -> surcharge amount
+
+function renderGamesMgr(){
+  // Load from API if available
+  if (window.ngApi) {
+    window.ngApi.getGames().then(function(games) {
+      if (!games) { renderGamesMgrLocal(); return; }
+      // Games from API: [{name, surcharge}]
+      gameLibrary = games.map(function(g) { return typeof g === 'string' ? g : g.name; });
+      games.forEach(function(g) {
+        if (typeof g === 'object') gameSurcharges[g.name] = g.surcharge || 0;
+      });
+      renderGamesMgrLocal();
+    });
+  } else {
+    renderGamesMgrLocal();
+  }
+}
+
+function renderGamesMgrLocal(){
+  var list = document.getElementById('adm-games-list');
+  if (!list) return;
+  list.innerHTML = gameLibrary.map(function(g,i){
+    var surcharge = gameSurcharges[g] || 0;
+    var sTag = surcharge > 0
+      ? '<span style="font-size:10px;background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25);padding:2px 8px;border-radius:20px;margin-left:6px;">+KES '+surcharge+'</span>'
+      : '<span style="font-size:10px;color:var(--mu);margin-left:6px;">base rate</span>';
+    return '<div class="game-item"><span><span class="game-item-id">G'+('00'+(i+1)).slice(-3)+'</span>'+g+sTag+'</span>'
+      +'<button class="del-btn" onclick="removeGame('+i+')">x</button></div>';
+  }).join('') || '<div style="color:var(--mu);font-size:13px;padding:8px">No games yet.</div>';
+}
+
+function addGame(){
+  var inp = document.getElementById('adm-new-game');
+  var sinp = document.getElementById('adm-new-surcharge');
+  var name = inp.value.trim();
+  var surcharge = parseInt((sinp||{}).value||'0') || 0;
+  if (!name) return;
+  if (gameLibrary.includes(name)) { showToast('Already in library'); return; }
+  gameLibrary.push(name);
+  gameSurcharges[name] = surcharge;
+  saveGames();
+  inp.value = ''; if(sinp) sinp.value = '0';
+  renderGamesMgrLocal();
+  showToast('"'+name+'" added'+(surcharge?' (+KES '+surcharge+' surcharge)':''));
+}
+
+function removeGame(i){
+  var name = gameLibrary[i];
+  delete gameSurcharges[name];
+  gameLibrary.splice(i,1);
+  saveGames();
+  renderGamesMgrLocal();
+}
+
+function syncGamesToServer(){
+  if (!window.ngApi) { showToast('No server connection'); return; }
+  var payload = gameLibrary.map(function(g) {
+    return { name: g, surcharge: gameSurcharges[g] || 0 };
+  });
+  window.ngApi.updateGames(payload).then(function(r) {
+    if (r && r.ok) showToast('Games saved to server ✅');
+    else showToast('Failed to save to server');
+  });
+}
+
+function saveGames(){
+  localStorage.setItem('nga_games', JSON.stringify(gameLibrary));
+}
+window.addGame             = addGame;
+  window.removeGame          = removeGame;
+  window.syncGamesToServer   = syncGamesToServer;
+  window.renderGamesMgr      = renderGamesMgr;
+window.removeGame   = removeGame;
+window.saveSettings = saveSettings;
+window.changePins   = changePins;
+window.clearAll     = clearAll;
+window.exportXL     = exportXL;
+window.unlock       = unlock;
+
+
+// ── INTEGRITY LOG ─────────────────────────────────────────────────
+function renderIntegrity() {
+  if (!window.ngApi) {
+    document.getElementById('integrity-log-wrap').innerHTML =
+      '<div style="text-align:center;padding:40px;color:var(--mu);font-size:13px;">Connect to backend to view integrity log.</div>';
+    return;
+  }
+  window.ngApi.getIntegrityLog().then(function(log) {
+    if (!log) {
+      document.getElementById('integrity-log-wrap').innerHTML =
+        '<div style="text-align:center;padding:40px;color:var(--mu);">No checks yet. Start a session to begin monitoring.</div>';
+      return;
+    }
+    var total    = log.length;
+    var verified = log.filter(function(l){return l.verified===true;}).length;
+    var unver    = log.filter(function(l){return l.verified===null||l.verified===undefined;}).length;
+    document.getElementById('ig-total').textContent     = total;
+    document.getElementById('ig-verified').textContent  = verified;
+    document.getElementById('ig-pending-count').textContent = unver;
+
+    var rows = log.map(function(l) {
+      var vBadge = l.verified === true
+        ? '<span style="background:rgba(16,185,129,.13);color:#10b981;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;">✓ VERIFIED</span>'
+        : l.verified === false
+        ? '<span style="background:rgba(239,68,68,.1);color:#ef4444;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;">✗ FLAGGED</span>'
+        : '<span style="background:rgba(245,158,11,.12);color:#f59e0b;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;">⏳ PENDING</span>';
+      var ts = new Date(l.timestamp).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      return '<tr>'
+        +'<td><span style="font-family:Orbitron,sans-serif;font-size:11px;color:#a5b4fc;">PS5 #'+l.station+'</span></td>'
+        +'<td>'+l.player+'</td>'
+        +'<td style="font-size:12px;">'+l.game+'</td>'
+        +'<td style="font-family:Orbitron,sans-serif;font-size:11px;">'+l.check_num+'/4</td>'
+        +'<td style="font-size:12px;">'+ts+'</td>'
+        +'<td>'+l.elapsed+'m elapsed</td>'
+        +'<td>'+vBadge+'</td>'
+        +'<td>'
+        +(l.verified===null||l.verified===undefined
+          ? '<button onclick="markVerified('+l.station+',\'' + l.timestamp + '\',true)" style="padding:4px 10px;border-radius:6px;border:none;background:rgba(16,185,129,.15);color:#10b981;font-size:11px;font-weight:700;cursor:pointer;margin-right:5px;">✓ OK</button>'
+            +'<button onclick="markVerified('+l.station+',\'' + l.timestamp + '\',false)" style="padding:4px 10px;border-radius:6px;border:none;background:rgba(239,68,68,.1);color:#ef4444;font-size:11px;font-weight:700;cursor:pointer;">✗ Issue</button>'
+          : '')
+        +'</td>'
+        +'</tr>';
+    }).join('');
+
+    document.getElementById('integrity-log-wrap').innerHTML = log.length
+      ? '<table><thead><tr>'
+        +'<th>Station</th><th>Player</th><th>Game</th><th>Check</th>'
+        +'<th>Time</th><th>Session</th><th>Status</th><th>Action</th>'
+        +'</tr></thead><tbody>' + rows + '</tbody></table>'
+      : '<div style="text-align:center;padding:40px;color:var(--mu);">No integrity checks yet.</div>';
+  });
+}
+
+window.markVerified = function(station, timestamp, verified) {
+  if (!window.ngApi) return;
+  window.ngApi.verifyCheck({station:station,timestamp:timestamp,verified:verified}).then(function() {
+    renderIntegrity();
+    if(window.showToast) showToast(verified ? '✓ Marked as verified' : '⚠️ Issue flagged', verified?'ok':'err');
+  });
+};
+
+// Hook into showPg
+var _origShowPg = window.showPg;
+window.showPg = function(p, btn) {
+  if(_origShowPg) _origShowPg(p, btn);
+  if(p === 'integrity') renderIntegrity();
+  if(p === 'dashboard') {
+    // Also update stats from API
+    if(window.ngApi) {
+      window.ngApi.getStats().then(function(stats) {
+        if(!stats) return;
+        if(document.getElementById('kv-sess'))   document.getElementById('kv-sess').textContent   = stats.total_sessions;
+        if(document.getElementById('kv-rev'))    document.getElementById('kv-rev').textContent    = 'KES '+stats.total_revenue.toLocaleString();
+        if(document.getElementById('kv-hrs'))    document.getElementById('kv-hrs').textContent    = stats.total_hours;
+        if(document.getElementById('kv-today'))  document.getElementById('kv-today').textContent  = stats.today_sessions;
+        if(document.getElementById('kv-trev'))   document.getElementById('kv-trev').textContent   = 'KES '+stats.today_revenue.toLocaleString()+' today';
+        if(document.getElementById('kv-avg'))    document.getElementById('kv-avg').textContent    = stats.avg_duration+' min';
+      });
+    }
+  }
+};
+
+if(isLk())startLk();
+chkAuto();
+})();
+
+</script>
+<script src="/api.js"></script>
+</body></html>
